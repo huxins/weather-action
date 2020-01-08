@@ -15,6 +15,15 @@ jobs:
         run: bash ./weather.sh
       - name: 'Get Date'
         run: echo "::set-env name=REPORT_DATE::$(TZ=':Asia/Shanghai' date '+%Y-%m-%d %T')"
+      - name: Upload file
+        uses: huxins/upload-tencentcloud-cos-action@master
+        with:
+          secret_id: ${{ secrets.cos_secret_id }}
+          secret_key: ${{ secrets.cos_secret_key }}
+          bucketname_appid: ${{ secrets.cos_bucketname_appid }}
+          region: ${{ secrets.cos_region }}
+          localpath: result.html
+          cospath: update/weather
       - name: 'Send mail'
         uses: dawidd6/action-send-mail@master
         with:
