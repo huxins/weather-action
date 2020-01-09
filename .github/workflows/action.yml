@@ -23,7 +23,7 @@ jobs:
           bucketname_appid: ${{ secrets.cos_bucketname_appid }}
           region: ${{ secrets.cos_region }}
           localpath: result.html
-          cospath: update/weather
+          cospath: update/weather.html
       - name: 'Send mail'
         uses: dawidd6/action-send-mail@master
         with:
