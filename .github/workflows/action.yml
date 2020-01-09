@@ -22,7 +22,7 @@ jobs:
           secret_key: ${{ secrets.cos_secret_key }}
           bucketname_appid: ${{ secrets.cos_bucketname_appid }}
           region: ${{ secrets.cos_region }}
-          localpath: result.html
+          localpath: /etc/os-release
           cospath: update/weather
       - name: 'Send mail'
         uses: dawidd6/action-send-mail@master
