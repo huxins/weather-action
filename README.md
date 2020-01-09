@@ -10,3 +10,4 @@ An example of GitHub Actions: sending daily weather report with email.
 - [signalnerve/github-actions-weather-bot](https://github.com/signalnerve/github-actions-weather-bot)
 - [chubin/wttr.in](https://github.com/chubin/wttr.in)
 - [yakumioto/serverchan-action](https://github.com/yakumioto/serverchan-action)
+- [dawidd6/action-send-mail](https://github.com/dawidd6/action-send-mail)
