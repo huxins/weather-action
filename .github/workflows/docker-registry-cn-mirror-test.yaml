@@ -1,0 +1,52 @@
+on:
+  push:
+  schedule:
+    - cron: '0 0 */1 * *'
+
+name: docker-registry-cn-mirror-test
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      TX_CD_IP: ${{secrets.TX_CD_IP}}
+      TX_CD_PASS: ${{secrets.TX_CD_PASS}}
+    steps:
+      - name: install
+        run: |
+          sudo apt update
+          sudo apt install -y sshpass
+
+      - name: docker version
+        run: sshpass -p $TX_CD_PASS ssh -p 22 -o StrictHostKeyChecking=no root@$TX_CD_IP "docker version"
+
+      - name: docker info
+        run: sshpass -p $TX_CD_PASS ssh -p 22 -o StrictHostKeyChecking=no root@$TX_CD_IP "docker info"
+
+      - name: Test
+        run: |
+          tee ./mirror.sh <<-'EOF'
+          registrys="
+          docker.io
+          f1361db2.m.daocloud.io
+          dockerhub.azk8s.cn
+          docker.mirrors.ustc.edu.cn
+          reg-mirror.qiniu.com
+          hub-mirror.c.163.com
+          docker.mirrors.ustc.edu.cn
+          mirror.gcr.io
+          $ALIYUN_MIRROR
+          "
+          image="library/nginx:1.17.6-alpine"
+
+          for registry in $registrys
+          do
+             docker pull $registry/$image \
+               && echo -e "\033[32m$registry is good\033[0m" \
+               || echo -e "\033[31m$registry is outdated\033[0m"
+             docker rmi $registry/$image || true
+          done
+          EOF
+          sshpass -p $TX_CD_PASS ssh -p 22 -o StrictHostKeyChecking=no root@$TX_CD_IP "export ALIYUN_MIRROR="$ALIYUN_MIRROR"; bash -s" < mirror.sh
+        env:
+          ALIYUN_MIRROR: ${{secrets.ALIYUN_MIRROR}}
