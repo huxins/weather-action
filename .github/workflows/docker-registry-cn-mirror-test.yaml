@@ -28,25 +28,22 @@ jobs:
           tee ./mirror.sh <<-'EOF'
           registrys="
           docker.io
-          f1361db2.m.daocloud.io
           dockerhub.azk8s.cn
-          docker.mirrors.ustc.edu.cn
-          reg-mirror.qiniu.com
-          hub-mirror.c.163.com
-          docker.mirrors.ustc.edu.cn
-          mirror.gcr.io
+          mirror.ccs.tencentyun.com
           $ALIYUN_MIRROR
+          $HUAWEI_MIRROR
           "
           image="library/nginx:1.17.6-alpine"
 
           for registry in $registrys
           do
-             docker pull $registry/$image \
+             time docker pull $registry/$image \
                && echo -e "\033[32m$registry is good\033[0m" \
                || echo -e "\033[31m$registry is outdated\033[0m"
              docker rmi $registry/$image || true
           done
           EOF
-          sshpass -p $TX_CD_PASS ssh -p 22 -o StrictHostKeyChecking=no root@$TX_CD_IP "export ALIYUN_MIRROR="$ALIYUN_MIRROR"; bash -s" < mirror.sh
+          sshpass -p $TX_CD_PASS ssh -p 22 -o StrictHostKeyChecking=no root@$TX_CD_IP "export ALIYUN_MIRROR="$ALIYUN_MIRROR"; export HUAWEI_MIRROR="$HUAWEI_MIRROR"; bash -s" < mirror.sh
         env:
           ALIYUN_MIRROR: ${{secrets.ALIYUN_MIRROR}}
+          HUAWEI_MIRROR: ${{secrets.HUAWEI_MIRROR}}
